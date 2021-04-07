@@ -22,7 +22,7 @@ if not chat:
     print('Wrong chat name')
     exit()
 
-print(f'You picked {chat_name} chat, collecting statistics....')
+print(f'You picked {chat_name} chat, collecting statistics....\n')
 
 messages = chat['messages']
 
@@ -35,9 +35,29 @@ messages_count = len(messages)
 
 users_messages_count = {}
 
+all_words = {}
+
 for msg in messages:
     if msg['type'] == 'service':
         continue
+    msg_text = msg['text']
+    text = ''
+    if isinstance(msg_text, list):
+        for el in msg_text:
+            if isinstance(el, str):
+                text += el
+            else:
+                text += el['text'] + ' '
+    else:
+        text = msg_text
+    words = text.split()
+    for word in words:
+        if len(word) < 3:
+            continue
+        if word in all_words.keys():
+            all_words[word] += 1
+        else:
+            all_words[word] = 1
     user_from = msg['from']
     if user_from in users_messages_count.keys():
         users_messages_count[user_from] += 1
@@ -52,3 +72,13 @@ print('\n'.join(
     [f'{index + 1}. {user} - {users_messages_count[user]} messages.' for index, user in enumerate(
         sorted(users_messages_count.keys(), key=lambda el: users_messages_count[el],
                reverse=True))]))
+print()
+
+count_of_words_to_display = int(input('Type count of most used words that you want to display: '))
+if count_of_words_to_display >= len(all_words):
+    count_of_words_to_display = len(all_words) - 1
+print(f'{count_of_words_to_display} most used words:')
+print('\n'.join(
+    [f'{index + 1}. {word} - {all_words[word]} words.' for index, word in enumerate(
+        sorted(all_words.keys(), key=lambda el: all_words[el],
+               reverse=True)[:count_of_words_to_display])]))
