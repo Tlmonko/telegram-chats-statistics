@@ -50,7 +50,7 @@ for msg in messages:
                 text += el['text'] + ' '
     else:
         text = msg_text
-    words = text.split()
+    words = text.lower().split()
     for word in words:
         if len(word) < 3:
             continue
