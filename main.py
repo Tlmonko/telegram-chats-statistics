@@ -1,7 +1,10 @@
+import datetime
 import json
 import os
 
-file_name = input('Type your JSON telegram data file name: ')
+file_name = input('Type your JSON telegram data file name (default: result.json): ')
+if not file_name:
+    file_name = 'result.json'
 
 if not os.path.exists(file_name):
     print('File doesn\'t exist')
@@ -37,7 +40,13 @@ users_messages_count = {}
 
 all_words = {}
 
+dates = {}
+
 for msg in messages:
+    date, time = msg['date'].split('T')
+    if date not in dates.keys():
+        dates[date] = 0
+    dates[date] += 1
     if msg['type'] == 'service':
         continue
     msg_text = msg['text']
@@ -73,6 +82,11 @@ print('\n'.join(
         sorted(users_messages_count.keys(), key=lambda el: users_messages_count[el],
                reverse=True))]))
 print()
+
+count_of_dates_to_display = int(input('Type count of most active days that you want to display: '))
+print('Most active days:')
+print('\n'.join([f'{el} - {dates[el]} messages' for el in
+                 sorted(dates.keys(), key=lambda date: dates[date])[::-1][:count_of_dates_to_display]]))
 
 count_of_words_to_display = int(input('Type count of most used words that you want to display: '))
 if count_of_words_to_display >= len(all_words):
