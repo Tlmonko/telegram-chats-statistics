@@ -1,5 +1,6 @@
 import json
 import os
+import matplotlib.pyplot as plt
 
 file_name = input('Type your JSON telegram data file name (default: result.json): ')
 if not file_name:
@@ -42,6 +43,8 @@ all_words = {}
 dates = {}
 
 for msg in messages:
+    if msg['type'] == 'unsupported':
+        continue
     date, time = msg['date'].split('T')
     if date not in dates.keys():
         dates[date] = 0
@@ -95,3 +98,8 @@ print('\n'.join(
     [f'{index + 1}. {word} - {all_words[word]} words.' for index, word in enumerate(
         sorted(all_words.keys(), key=lambda el: all_words[el],
                reverse=True)[:count_of_words_to_display])]))
+
+want_to_see_plot = input('Do you want to see a messages count over time plot? [Y/n]: ')
+if want_to_see_plot == 'Y' or not want_to_see_plot:
+    plt.plot(dates.keys(), dates.values())
+    plt.show()
